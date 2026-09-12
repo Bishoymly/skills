@@ -1,0 +1,1130 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <title>Workspace billing grace periods — technical briefing</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+      :root {
+        --ink: #172033;
+        --muted: #65708a;
+        --paper: #f6f4ef;
+        --card: #fffefa;
+        --line: #dbe1e8;
+        --indigo: #4f46e5;
+        --amber: #d97706;
+        --rose: #e11d48;
+        --green: #047857;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        background: var(--paper);
+        color: var(--ink);
+        font-family:
+          Inter,
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+      }
+      body {
+        margin: 0;
+      }
+      a {
+        color: inherit;
+        text-decoration-color: #a5b4fc;
+        text-underline-offset: 3px;
+      }
+      .sheet {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 52px 28px 80px;
+      }
+      .eyebrow {
+        color: var(--indigo);
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+      h1,
+      h2,
+      h3,
+      p {
+        margin-top: 0;
+      }
+      h1 {
+        max-width: 900px;
+        margin: 10px 0 16px;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(38px, 6vw, 68px);
+        line-height: 0.98;
+        letter-spacing: -0.05em;
+      }
+      h2 {
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 30px;
+        letter-spacing: -0.03em;
+      }
+      h3 {
+        font-size: 15px;
+        margin-bottom: 6px;
+      }
+      .lede {
+        max-width: 790px;
+        color: #3e4a64;
+        font-size: 19px;
+        line-height: 1.55;
+      }
+      .topline,
+      .section-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+      }
+      .topline {
+        margin-bottom: 22px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+      .mono {
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+        font-size: 0.88em;
+      }
+      .rule {
+        height: 1px;
+        background: var(--line);
+        margin: 30px 0;
+      }
+      .overview {
+        display: grid;
+        grid-template-columns: 1.25fr 0.75fr;
+        gap: 18px;
+      }
+      .card,
+      .metric,
+      .flow,
+      .item {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+      }
+      .card {
+        padding: 24px;
+      }
+      .summary {
+        font-size: 16px;
+        line-height: 1.55;
+      }
+      .scope {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 18px;
+      }
+      .pill {
+        border: 1px solid #c7d2fe;
+        border-radius: 999px;
+        color: #3730a3;
+        font-size: 12px;
+        font-weight: 700;
+        padding: 5px 10px;
+      }
+      .metric-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+      }
+      .metric {
+        padding: 16px;
+      }
+      .metric strong {
+        display: block;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 30px;
+        line-height: 1;
+      }
+      .metric span {
+        color: var(--muted);
+        display: block;
+        font-size: 12px;
+        line-height: 1.35;
+        margin-top: 7px;
+      }
+      .attention-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 14px;
+      }
+      .attention {
+        align-items: center;
+        background: #fff7df;
+        border-radius: 8px;
+        color: #8a4b06;
+        display: inline-flex;
+        font-size: 12px;
+        font-weight: 750;
+        gap: 6px;
+        padding: 7px 9px;
+      }
+      section {
+        margin-top: 58px;
+      }
+      .section-top {
+        align-items: end;
+        border-bottom: 1px solid var(--line);
+        margin-bottom: 18px;
+        padding-bottom: 12px;
+      }
+      .section-top p {
+        color: var(--muted);
+        font-size: 14px;
+        margin: 0;
+        max-width: 500px;
+        text-align: right;
+      }
+      .two-col {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+      }
+      .migration-list {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0;
+        overflow: hidden;
+      }
+      .migration-list .item {
+        border-radius: 0;
+        border-right: 0;
+      }
+      .migration-list .item:first-child {
+        border-radius: 16px 0 0 16px;
+      }
+      .migration-list .item:last-child {
+        border-radius: 0 16px 16px 0;
+        border-right: 1px solid var(--line);
+      }
+      .step-number {
+        color: #a5b4fc;
+        display: block;
+        font-family: Georgia, serif;
+        font-size: 30px;
+        font-weight: 700;
+        line-height: 1;
+        margin-bottom: 14px;
+      }
+      .api-ui-grid {
+        display: grid;
+        gap: 14px;
+      }
+      .endpoint {
+        border-left: 4px solid var(--indigo);
+        display: grid;
+        gap: 16px;
+        grid-template-columns: minmax(260px, 0.8fr) 1.2fr 0.8fr;
+        padding: 19px 20px;
+      }
+      .endpoint div {
+        min-width: 0;
+      }
+      .endpoint p {
+        color: #536078;
+        font-size: 14px;
+        line-height: 1.5;
+        margin: 0;
+      }
+      .endpoint .mono {
+        color: #3730a3;
+        font-weight: 700;
+      }
+      .journey {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+      }
+      .journey .item {
+        border-top: 3px solid #c7d2fe;
+      }
+      .operation-strip {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        overflow: hidden;
+      }
+      .operation-strip .item {
+        border-radius: 0;
+        border-right: 0;
+        min-height: 174px;
+      }
+      .operation-strip .item:first-child {
+        border-radius: 16px 0 0 16px;
+      }
+      .operation-strip .item:last-child {
+        border-radius: 0 16px 16px 0;
+        border-right: 1px solid var(--line);
+      }
+      .test-matrix {
+        display: grid;
+        grid-template-columns: 180px 1fr 1fr;
+        overflow: hidden;
+      }
+      .test-matrix > p,
+      .test-matrix .item {
+        border: 1px solid var(--line);
+        margin: 0;
+        padding: 17px;
+      }
+      .test-matrix > p {
+        background: #eef2ff;
+        color: #3730a3;
+        font-size: 13px;
+        font-weight: 800;
+      }
+      .test-matrix .item {
+        border-left: 0;
+        border-radius: 0;
+      }
+      .item {
+        padding: 18px;
+        position: relative;
+      }
+      .item p {
+        color: #536078;
+        font-size: 14px;
+        line-height: 1.5;
+        margin: 0;
+      }
+      .item-head {
+        align-items: flex-start;
+        display: flex;
+        gap: 11px;
+      }
+      .icon {
+        align-items: center;
+        background: #eef2ff;
+        border-radius: 10px;
+        color: var(--indigo);
+        display: inline-flex;
+        flex: 0 0 auto;
+        height: 32px;
+        justify-content: center;
+        width: 32px;
+      }
+      .icon.warn {
+        background: #fff7df;
+        color: var(--amber);
+      }
+      .icon.rose {
+        background: #fff0f3;
+        color: var(--rose);
+      }
+      .icon.green {
+        background: #e7f8f1;
+        color: var(--green);
+      }
+      .risk-dot {
+        background: var(--amber);
+        border-radius: 99px;
+        box-shadow: 0 0 0 4px #fff4d7;
+        height: 8px;
+        position: absolute;
+        right: 19px;
+        top: 19px;
+        width: 8px;
+      }
+      .small {
+        color: var(--muted);
+        font-size: 12px;
+        margin-top: 11px !important;
+      }
+      .flow {
+        overflow: hidden;
+        padding: 0;
+      }
+      .flow svg {
+        display: block;
+        height: auto;
+        width: 100%;
+      }
+      .flow-caption {
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.45;
+        padding: 14px 18px;
+      }
+      .route {
+        border-left: 2px solid #c7d2fe;
+        margin-left: 14px;
+        padding: 0 0 18px 20px;
+        position: relative;
+      }
+      .route:last-child {
+        padding-bottom: 0;
+      }
+      .route::before {
+        background: var(--indigo);
+        border: 3px solid var(--card);
+        border-radius: 50%;
+        content: "";
+        height: 12px;
+        left: -7px;
+        position: absolute;
+        top: 2px;
+        width: 12px;
+      }
+      .route p {
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.45;
+        margin: 4px 0 0;
+      }
+      .task {
+        align-items: center;
+        border-top: 1px solid var(--line);
+        display: grid;
+        gap: 12px;
+        grid-template-columns: 30px 1fr auto;
+        padding: 14px 0;
+      }
+      .task:first-child {
+        border-top: 0;
+        padding-top: 0;
+      }
+      .task:last-child {
+        padding-bottom: 0;
+      }
+      .check {
+        align-items: center;
+        background: #e7f8f1;
+        border-radius: 50%;
+        color: var(--green);
+        display: inline-flex;
+        height: 25px;
+        justify-content: center;
+        width: 25px;
+      }
+      .check.open {
+        background: #eef2ff;
+        color: var(--indigo);
+      }
+      .task small {
+        color: var(--muted);
+        display: block;
+        margin-top: 2px;
+      }
+      .task time {
+        color: var(--muted);
+        font-size: 12px;
+        white-space: nowrap;
+      }
+      footer {
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 12px;
+        margin-top: 64px;
+        padding-top: 18px;
+      }
+      @media (max-width: 760px) {
+        .sheet {
+          padding: 32px 18px 56px;
+        }
+        .overview,
+        .two-col {
+          grid-template-columns: 1fr;
+        }
+        .section-top {
+          align-items: start;
+          flex-direction: column;
+        }
+        .section-top p {
+          text-align: left;
+        }
+        .migration-list,
+        .journey,
+        .operation-strip,
+        .test-matrix,
+        .endpoint {
+          grid-template-columns: 1fr;
+        }
+        .migration-list .item,
+        .operation-strip .item,
+        .test-matrix .item {
+          border: 1px solid var(--line);
+          border-radius: 0;
+        }
+        .migration-list .item:first-child,
+        .operation-strip .item:first-child {
+          border-radius: 16px 16px 0 0;
+        }
+        .migration-list .item:last-child,
+        .operation-strip .item:last-child {
+          border-radius: 0 0 16px 16px;
+        }
+      }
+      @media print {
+        @page {
+          margin: 13mm;
+        }
+        html {
+          background: #fff;
+        }
+        .sheet {
+          max-width: none;
+          padding: 0;
+        }
+        .card,
+        .item,
+        .flow,
+        .metric {
+          break-inside: avoid;
+          box-shadow: none;
+        }
+        section {
+          margin-top: 36px;
+        }
+        a {
+          text-decoration: none;
+        }
+      }
+    </style>
+  </head>
+  <body class="antialiased">
+    <main class="sheet">
+      <div class="topline">
+        <a href="https://github.com/acme-cloud/console/pull/482"
+          ><span class="mono">Pull request #482</span> · acme-cloud/console</a
+        >
+        <span>14 September 2026</span>
+      </div>
+
+      <header>
+        <p class="eyebrow">Workspace billing</p>
+        <h1>
+          Give workspace owners a clear, recoverable grace period after a failed
+          renewal.
+        </h1>
+        <p class="lede">
+          The change records a short grace window, keeps the workspace usable
+          while payment can be fixed, and makes the state visible in the billing
+          experience. It introduces one small billing workflow across the
+          database, API, UI, and scheduled enforcement.
+        </p>
+      </header>
+
+      <div class="rule"></div>
+
+      <section class="overview" aria-label="At a glance">
+        <article class="card">
+          <p class="eyebrow">At a glance</p>
+          <p class="summary">
+            <strong
+              >Failed renewals no longer immediately restrict a
+              workspace.</strong
+            >
+            A billing grace period starts after a retryable payment failure,
+            ends when payment succeeds or the window expires, and is surfaced
+            where an owner can act on it.
+          </p>
+          <nav class="scope" aria-label="Change areas">
+            <span class="pill">Database</span><span class="pill">API</span
+            ><span class="pill">Billing UI</span
+            ><span class="pill">Scheduled job</span
+            ><span class="pill">Tests</span>
+          </nav>
+        </article>
+        <aside class="card">
+          <p class="eyebrow">Current shape</p>
+          <div class="metric-grid">
+            <div class="metric">
+              <strong>6</strong><span>implementation tasks</span>
+            </div>
+            <div class="metric">
+              <strong>4</strong><span>areas touched</span>
+            </div>
+            <div class="metric">
+              <strong>3</strong><span>test suites added</span>
+            </div>
+          </div>
+          <p class="small">
+            4 of 6 tasks are complete in the pull request description.
+          </p>
+          <div
+            class="attention-list"
+            role="group"
+            aria-label="Items needing attention"
+          >
+            <span class="attention"
+              ><i data-lucide="database" size="14"></i>Schema migration</span
+            >
+            <span class="attention"
+              ><i data-lucide="clock-3" size="14"></i>Hourly enforcement</span
+            >
+          </div>
+        </aside>
+      </section>
+
+      <section>
+        <div class="section-top">
+          <div>
+            <p class="eyebrow">Data lifecycle</p>
+            <h2>Grace period state</h2>
+          </div>
+          <p>
+            One state transition links payment retries, the workspace, and
+            eventual enforcement.
+          </p>
+        </div>
+        <div class="flow">
+          <svg
+            viewBox="0 0 1000 250"
+            role="img"
+            aria-label="A failed payment creates a grace period, which remains active until payment succeeds or expiry triggers workspace restriction."
+          >
+            <defs>
+              <marker
+                id="arrow"
+                markerWidth="10"
+                markerHeight="10"
+                refX="9"
+                refY="3"
+                orient="auto"
+              >
+                <path d="M0,0 L0,6 L9,3 z" fill="#818cf8" />
+              </marker>
+            </defs>
+            <rect
+              x="48"
+              y="78"
+              width="170"
+              height="90"
+              rx="14"
+              fill="#fffefa"
+              stroke="#dbe1e8"
+            />
+            <text
+              x="133"
+              y="113"
+              text-anchor="middle"
+              fill="#172033"
+              font-family="Inter, sans-serif"
+              font-size="15"
+              font-weight="700"
+            >
+              Renewal fails
+            </text>
+            <text
+              x="133"
+              y="140"
+              text-anchor="middle"
+              fill="#65708a"
+              font-family="Inter, sans-serif"
+              font-size="12"
+            >
+              retryable payment error
+            </text>
+            <path
+              d="M218 123 H350"
+              fill="none"
+              stroke="#818cf8"
+              stroke-width="2"
+              marker-end="url(#arrow)"
+            />
+            <rect
+              x="360"
+              y="58"
+              width="280"
+              height="130"
+              rx="14"
+              fill="#eef2ff"
+              stroke="#a5b4fc"
+            />
+            <text
+              x="500"
+              y="98"
+              text-anchor="middle"
+              fill="#312e81"
+              font-family="Inter, sans-serif"
+              font-size="15"
+              font-weight="800"
+            >
+              Billing grace period
+            </text>
+            <text
+              x="500"
+              y="125"
+              text-anchor="middle"
+              fill="#4f46e5"
+              font-family="Inter, sans-serif"
+              font-size="12"
+            >
+              starts_at · ends_at · resolved_at
+            </text>
+            <text
+              x="500"
+              y="151"
+              text-anchor="middle"
+              fill="#4f46e5"
+              font-family="Inter, sans-serif"
+              font-size="12"
+            >
+              linked to the workspace
+            </text>
+            <path
+              d="M640 92 H760"
+              fill="none"
+              stroke="#818cf8"
+              stroke-width="2"
+              marker-end="url(#arrow)"
+            />
+            <path
+              d="M640 154 H760"
+              fill="none"
+              stroke="#f59e0b"
+              stroke-width="2"
+              marker-end="url(#arrow)"
+            />
+            <rect
+              x="770"
+              y="46"
+              width="180"
+              height="74"
+              rx="14"
+              fill="#e7f8f1"
+              stroke="#9ddcc8"
+            />
+            <text
+              x="860"
+              y="78"
+              text-anchor="middle"
+              fill="#047857"
+              font-family="Inter, sans-serif"
+              font-size="14"
+              font-weight="800"
+            >
+              Payment succeeds
+            </text>
+            <text
+              x="860"
+              y="100"
+              text-anchor="middle"
+              fill="#047857"
+              font-family="Inter, sans-serif"
+              font-size="12"
+            >
+              period resolves
+            </text>
+            <rect
+              x="770"
+              y="136"
+              width="180"
+              height="74"
+              rx="14"
+              fill="#fff7df"
+              stroke="#f4c76d"
+            />
+            <text
+              x="860"
+              y="168"
+              text-anchor="middle"
+              fill="#a85408"
+              font-family="Inter, sans-serif"
+              font-size="14"
+              font-weight="800"
+            >
+              Window expires
+            </text>
+            <text
+              x="860"
+              y="190"
+              text-anchor="middle"
+              fill="#a85408"
+              font-family="Inter, sans-serif"
+              font-size="12"
+            >
+              workspace restricts
+            </text>
+          </svg>
+          <div class="flow-caption">
+            The scheduled job is the only path that restricts a workspace for
+            this state; a successful payment resolves the period first.
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-top">
+          <div>
+            <p class="eyebrow">Database</p>
+            <h2>A small, recoverable record</h2>
+          </div>
+          <p>
+            The migration introduces the grace window without changing
+            subscription history.
+          </p>
+        </div>
+        <div class="migration-list">
+          <article class="item">
+            <span
+              class="risk-dot"
+              role="img"
+              title="Migration requires attention"
+              aria-label="Migration requires attention"
+            ></span>
+            <span class="step-number">01</span>
+            <div class="item-head">
+              <span class="icon warn"><i data-lucide="database"></i></span>
+              <div>
+                <h3><span class="mono">billing_grace_periods</span></h3>
+                <p>
+                  New workspace-scoped record stores when a grace period starts,
+                  ends, and resolves.
+                </p>
+              </div>
+            </div>
+            <p class="small">
+              One active period per workspace is enforced by a partial unique
+              index.
+            </p>
+          </article>
+          <article class="item">
+            <span class="step-number">02</span>
+            <div class="item-head">
+              <span class="icon"><i data-lucide="git-branch"></i></span>
+              <div>
+                <h3>No historical backfill</h3>
+                <p>
+                  The workflow begins only for renewals that fail after the
+                  migration is deployed.
+                </p>
+              </div>
+            </div>
+            <p class="small">
+              Existing restricted workspaces keep their current state.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-top">
+          <div>
+            <p class="eyebrow">API &amp; UI</p>
+            <h2>Owners can see and resolve the state</h2>
+          </div>
+          <p>
+            The API exposes a focused billing state; the UI only adds it where
+            an owner can take action.
+          </p>
+        </div>
+        <div class="api-ui-grid">
+          <article class="item endpoint">
+            <div>
+              <span class="icon"><i data-lucide="braces"></i></span>
+              <h3><span class="mono">GET /v1/workspaces/:id/billing</span></h3>
+            </div>
+            <div>
+              <p>
+                Adds an optional grace-period object with end time and
+                payment-recovery URL.
+              </p>
+            </div>
+            <div>
+              <p class="small">
+                Optional response field; existing consumers remain compatible.
+              </p>
+            </div>
+          </article>
+          <div class="journey">
+            <article class="item">
+              <div class="item-head">
+                <span class="icon"><i data-lucide="layout-panel-top"></i></span>
+                <div>
+                  <h3>Workspace billing page</h3>
+                  <p>
+                    A focused banner names the remaining time and takes the
+                    owner to payment recovery.
+                  </p>
+                </div>
+              </div>
+              <p class="small">
+                The banner is not shown to non-owners or to workspaces without
+                an active period.
+              </p>
+            </article>
+            <article class="item">
+              <div class="item-head">
+                <span class="icon"><i data-lucide="bell-ring"></i></span>
+                <div>
+                  <h3>Workspace switcher</h3>
+                  <p>
+                    A compact attention icon makes an affected workspace
+                    discoverable without interrupting work.
+                  </p>
+                </div>
+              </div>
+            </article>
+            <article class="item">
+              <span
+                class="risk-dot"
+                role="img"
+                title="External billing dependency"
+                aria-label="External billing dependency"
+              ></span>
+              <div class="item-head">
+                <span class="icon warn"><i data-lucide="credit-card"></i></span>
+                <div>
+                  <h3>Payment recovery</h3>
+                  <p>
+                    Reuses the existing billing portal session instead of
+                    introducing a new payment form.
+                  </p>
+                </div>
+              </div>
+              <p class="small">
+                The recovery link depends on the existing payment provider
+                portal.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-top">
+          <div>
+            <p class="eyebrow">Operations</p>
+            <h2>Expiry is deliberate, not immediate</h2>
+          </div>
+          <p>
+            A scheduled path moves expired periods into the existing workspace
+            restriction behavior.
+          </p>
+        </div>
+        <div class="operation-strip">
+          <article class="item">
+            <span
+              class="risk-dot"
+              role="img"
+              title="Operational change"
+              aria-label="Operational change"
+            ></span>
+            <div class="item-head">
+              <span class="icon warn"><i data-lucide="clock-3"></i></span>
+              <div>
+                <h3>Hourly expiry worker</h3>
+                <p>
+                  The billing worker finds active periods past their end time
+                  and restricts the associated workspace.
+                </p>
+              </div>
+            </div>
+            <p class="small">
+              The worker uses the existing queue and retry policy.
+            </p>
+          </article>
+          <article class="item">
+            <div class="item-head">
+              <span class="icon"><i data-lucide="list-filter"></i></span>
+              <div>
+                <h3>Active &amp; expired</h3>
+                <p>Only periods past their end time are selected.</p>
+              </div>
+            </div>
+          </article>
+          <article class="item">
+            <div class="item-head">
+              <span class="icon green"><i data-lucide="shield-check"></i></span>
+              <div>
+                <h3>Idempotent restriction</h3>
+                <p>
+                  Repeating an expiry job leaves an already-restricted workspace
+                  unchanged.
+                </p>
+              </div>
+            </div>
+            <p class="small">
+              No new infrastructure service or deployment target is introduced.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-top">
+          <div>
+            <p class="eyebrow">Plan &amp; progress</p>
+            <h2>Four implementation steps are complete</h2>
+          </div>
+          <p>
+            Remaining work is concentrated in the scheduled enforcement path and
+            end-to-end coverage.
+          </p>
+        </div>
+        <article class="card">
+          <div class="task">
+            <span class="check"><i data-lucide="check" size="15"></i></span>
+            <div>
+              <strong>Add the grace-period migration</strong
+              ><small>Schema and unique active-period constraint</small>
+            </div>
+            <time>Complete</time>
+          </div>
+          <div class="task">
+            <span class="check"><i data-lucide="check" size="15"></i></span>
+            <div>
+              <strong>Start and resolve periods from payment events</strong
+              ><small>Retryable failure and successful payment paths</small>
+            </div>
+            <time>Complete</time>
+          </div>
+          <div class="task">
+            <span class="check"><i data-lucide="check" size="15"></i></span>
+            <div>
+              <strong>Expose billing state and recovery link</strong
+              ><small>Optional API response shape</small>
+            </div>
+            <time>Complete</time>
+          </div>
+          <div class="task">
+            <span class="check"><i data-lucide="check" size="15"></i></span>
+            <div>
+              <strong>Show the owner-facing billing state</strong
+              ><small>Billing page banner and switcher indicator</small>
+            </div>
+            <time>Complete</time>
+          </div>
+          <div class="task">
+            <span class="check open"
+              ><i data-lucide="arrow-right" size="15"></i
+            ></span>
+            <div>
+              <strong>Run expiry through the billing worker</strong
+              ><small>Hourly scan and idempotent workspace restriction</small>
+            </div>
+            <time>In progress</time>
+          </div>
+          <div class="task">
+            <span class="check open"
+              ><i data-lucide="circle" size="13"></i
+            ></span>
+            <div>
+              <strong>Exercise the full recovery journey</strong
+              ><small>Failed renewal → recovery → expiry scenarios</small>
+            </div>
+            <time>Next</time>
+          </div>
+        </article>
+      </section>
+
+      <section>
+        <div class="section-top">
+          <div>
+            <p class="eyebrow">Tests</p>
+            <h2>Three focused behavior suites</h2>
+          </div>
+          <p>
+            Coverage follows the lifecycle rather than the implementation files.
+          </p>
+        </div>
+        <div class="test-matrix">
+          <p>Behavior</p>
+          <p>Covered journey</p>
+          <p>State</p>
+          <article class="item">
+            <div class="item-head">
+              <span class="icon green"
+                ><i data-lucide="flask-conical"></i
+              ></span>
+              <div>
+                <h3>Billing event behavior</h3>
+                <p>
+                  Creates one period for a retryable failure and resolves it
+                  when a later payment succeeds.
+                </p>
+              </div>
+            </div>
+          </article>
+          <article class="item">
+            <p>
+              Retryable failure → period begins → payment succeeds → period
+              resolves.
+            </p>
+          </article>
+          <article class="item"><p>Added</p></article>
+          <article class="item">
+            <div class="item-head">
+              <span class="icon green"
+                ><i data-lucide="flask-conical"></i
+              ></span>
+              <div>
+                <h3>Expiry worker behavior</h3>
+                <p>
+                  Restricts an expired workspace once and safely tolerates a
+                  repeated job run.
+                </p>
+              </div>
+            </div>
+          </article>
+          <article class="item">
+            <p>Period expires → worker restricts once → repeat run is safe.</p>
+          </article>
+          <article class="item"><p>Added</p></article>
+          <article class="item">
+            <div class="item-head">
+              <span class="icon green"
+                ><i data-lucide="flask-conical"></i
+              ></span>
+              <div>
+                <h3>Billing experience</h3>
+                <p>
+                  Shows recovery only to an owner with an active period and
+                  hides it after resolution.
+                </p>
+              </div>
+            </div>
+          </article>
+          <article class="item">
+            <p>Owner sees recovery; other roles and resolved periods do not.</p>
+          </article>
+          <article class="item"><p>Added</p></article>
+          <article class="item">
+            <div class="item-head">
+              <span class="icon"><i data-lucide="scan-search"></i></span>
+              <div>
+                <h3>End-to-end recovery</h3>
+                <p>
+                  Still planned: prove the full
+                  failed-renewal-to-successful-recovery path against the payment
+                  provider test environment.
+                </p>
+              </div>
+            </div>
+          </article>
+          <article class="item">
+            <p>Failed renewal → recovery in the provider test environment.</p>
+          </article>
+          <article class="item"><p>Planned</p></article>
+        </div>
+      </section>
+
+      <footer>
+        This is a fictional exemplar for the
+        <span class="mono">show-me</span> skill. It demonstrates presentation
+        patterns, not a real pull request or rollout plan.
+      </footer>
+    </main>
+    <script>
+      if (window.lucide) window.lucide.createIcons();
+    </script>
+  </body>
+</html>
