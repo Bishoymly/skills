@@ -2,15 +2,15 @@
 
 Small, focused agent skills for making technical work easier to understand and use.
 
+```sh
+npx skills add bishoymly/skills
+```
+
 ## Skills
 
 ### show-me
 
 Create a clean, human-readable HTML briefing from a technical plan, specification, ticket, pull request, diff, or file. It turns long technical material into a glanceable overview with only the sections that matter—such as database, API, UI, infrastructure, tasks, tests, or progress.
-
-```sh
-npx skills add https://github.com/Bishoymly/skills --skill show-me
-```
 
 The report is written as a standalone HTML file in the OS temporary directory and opened for review when possible. See [the skill](./show-me/SKILL.md) and [its exemplar](./show-me/show-me-example.html).
 
