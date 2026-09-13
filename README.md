@@ -14,8 +14,6 @@ npx skills add https://github.com/Bishoymly/skills --skill show-me
 
 The report is written as a standalone HTML file in the OS temporary directory and opened for review when possible. See [the skill](./show-me/SKILL.md) and [its exemplar](./show-me/show-me-example.html).
 
-![Preview of a show-me technical briefing](./show-me/preview.svg)
-
 Try requests such as:
 
 - “Show me this implementation plan before I approve it.”

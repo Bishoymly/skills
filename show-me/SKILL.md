@@ -41,9 +41,9 @@ Start from these display patterns when they fit:
 | -------------- | ------------------------------------------------------------------------------------------- |
 | Database       | Entities or tables, migration/backfill sequence, compatibility or rollback note when stated |
 | API            | Endpoint/action rows with caller, behavior, and compatibility impact                        |
-| UI             | Page and component changes grouped by the user journey they affect                          |
+| Frontend       | Page and component changes grouped by the user journey they affect                          |
 | Infrastructure | Service/configuration/deployment changes and operational dependency flow                    |
-| Plan           | Ordered task cards with ownership or dependency only when supplied                          |
+| Plan           | Ordered task with ownership or dependency only when supplied                          |
 | Tests          | Test areas, scenario coverage, and intentionally absent coverage only when stated           |
 | Progress       | Compact milestone timeline or status strip, using only source-grounded status               |
 
