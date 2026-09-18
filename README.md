@@ -1,4 +1,4 @@
-# Bishoy's Skills
+# Bishoymly's Skills
 
 Small, focused agent skills for making technical work easier to understand and use.
 
