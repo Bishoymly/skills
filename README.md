@@ -12,7 +12,9 @@ npx skills add bishoymly/skills
 
 Create a clean, human-readable HTML briefing from a technical plan, specification, ticket, pull request, diff, or file. It turns long technical material into a glanceable overview with only the sections that matter—such as database, API, UI, infrastructure, tasks, tests, or progress.
 
-The report is written as a standalone HTML file in the OS temporary directory and opened for review when possible. See [the skill](./show-me/SKILL.md) and [its exemplar](./show-me/show-me-example.html).
+The report is written as a standalone HTML file in the OS temporary directory and opened for review when possible.
+
+![Show Me skill preview showing the title and sections of a sample technical briefing](./assets/show-me/show-me-marketing.gif)
 
 Try requests such as:
 
