@@ -1,10 +1,8 @@
 # Bishoymly's Skills
 
-Small, focused agent skills for making technical work easier to understand and use.
+[![skills.sh installs](https://skills.sh/b/bishoymly/skills)](https://skills.sh/bishoymly/skills)
 
-```sh
-npx skills add bishoymly/skills
-```
+Small, focused agent skills for making technical work easier to understand and use.
 
 ## Skills
 
@@ -14,9 +12,17 @@ Create a clean, human-readable HTML briefing from a technical plan, specificatio
 
 The report is written as a standalone HTML file in the OS temporary directory and opened for review when possible.
 
+**Install:**
+
+```sh
+npx skills add bishoymly/skills --skill show-me
+```
+
 ![Show Me skill preview showing the title and sections of a sample technical briefing](./assets/show-me/show-me-marketing.gif)
 
-Try requests such as:
+**Try it:** Ask your agent, “Show me `docs/billing-grace-period.md` in a format the product team can skim.” Show Me turns the file into a short HTML briefing with the relevant changes, progress, and source links. It includes details only when the file supports them.
+
+Other requests:
 
 - “Show me this implementation plan before I approve it.”
 - “Show me PR #482 in a format I can skim.”
