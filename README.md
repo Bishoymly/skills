@@ -26,7 +26,6 @@ Other requests:
 
 - “Show me this implementation plan before I approve it.”
 - “Show me PR #482 in a format I can skim.”
-- “Turn `docs/billing-grace-period.md` into a briefing for the product team.”
 
 ## Design principles
 
