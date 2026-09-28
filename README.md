@@ -27,6 +27,20 @@ Other requests:
 - “Show me this implementation plan before I approve it.”
 - “Show me PR #482 in a format I can skim.”
 
+### agent-ready-repo
+
+Make a JavaScript or TypeScript web repository agent-ready. It inspects what the project already has, then fills only the gaps: pinned Node.js, one `verify` command (format, lint, types, unit tests, build, browser tests), one proving test of each kind, `AGENTS.md` rules, and CI that runs the same `verify`. Next.js is the primary target.
+
+**Install:**
+
+```sh
+npx skills add bishoymly/skills --skill agent-ready-repo
+```
+
+**Try it:** “Make this repo agent-ready.”
+
+The tested walkthrough behind it: [What an agent-ready Next.js repository actually needs](https://bishoy.io/posts/agent-ready-nextjs-repository).
+
 ## Design principles
 
 - Human-readable first: concise plain English, strong visual hierarchy, and source links for detail.
